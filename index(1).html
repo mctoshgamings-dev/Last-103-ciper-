@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>103 Cipher</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#111;color:#eee;display:flex;justify-content:center;align-items:center;min-height:100vh}
+.card{width:min(900px,92vw);background:#1d1d1d;padding:24px;border-radius:14px;box-shadow:0 0 18px rgba(0,0,0,.4)}
+h1{text-align:center}
+input,textarea{width:100%;box-sizing:border-box;padding:12px;margin:10px 0;border-radius:8px;border:1px solid #444;background:#2b2b2b;color:#fff;font-size:16px}
+textarea{height:170px}
+button{padding:10px 18px;margin:4px;border:none;border-radius:8px;background:#3b82f6;color:white;cursor:pointer}
+button:hover{background:#2563eb}
+.center{text-align:center}
+#app{display:none}
+#error{color:#ff6b6b;text-align:center}
+</style>
+</head>
+<body>
+<div class="card" id="login">
+<h1>103 Cipher</h1>
+<p class="center">Enter Access Code</p>
+<input id="password" type="password" placeholder="Access Code">
+<div class="center"><button onclick="login()">Unlock</button></div>
+<p id="error"></p>
+</div>
+
+<div class="card" id="app">
+<h1>103 Cipher</h1>
+<textarea id="input" placeholder="Type or paste text..."></textarea>
+<div class="center">
+<button onclick="encode()">Encode</button>
+<button onclick="decode()">Decode</button>
+<button onclick="copyOut()">Copy</button>
+<button onclick="clearAll()">Clear</button>
+<button onclick="logout()">Logout</button>
+</div>
+<textarea id="output" readonly placeholder="Result..."></textarea>
+</div>
+
+<script>
+const ACCESS_CODE="103200";
+const letterToCode={
+Q:"11",A:"12",Z:"13",W:"21",S:"22",X:"23",E:"31",D:"32",C:"33",
+R:"41",F:"42",V:"43",T:"51",G:"52",B:"53",Y:"61",H:"62",N:"63",
+U:"71",J:"72",M:"73",I:"81",K:"82",O:"91",L:"92",P:"101"
+};
+const codeToLetter={}; for(const k in letterToCode){codeToLetter[letterToCode[k]]=k;}
+
+const shortcuts={
+"ILY":"I LOVE YOU","ILU":"I LOVE YOU","IMY":"I MISS YOU","LY":"LOVE YOU",
+"ML":"MY LOVE","TY":"THANK YOU","GN":"GOOD NIGHT","GM":"GOOD MORNING",
+"TC":"TAKE CARE","CU":"SEE YOU","JK":"JUST KIDDING","DW":"DON'T WORRY",
+"NP":"NO PROBLEM","LOL":"LAUGH OUT LOUD","OMG":"OH MY GOD","BRB":"BE RIGHT BACK"
+};
+const reverse={}; for(const k in shortcuts){reverse[shortcuts[k]]=k;}
+
+function login(){
+ const p=document.getElementById('password').value;
+ if(p===ACCESS_CODE){
+   document.getElementById('login').style.display='none'; document.getElementById('app').style.display='block';
+ } else document.getElementById('error').textContent="Incorrect access code.";
+}
+password.addEventListener("keydown",e=>{if(e.key==="Enter")login();});
+
+function encode(){
+ let text=input.value.toUpperCase().trim();
+ Object.keys(reverse).sort((a,b)=>b.length-a.length).forEach(p=>text=text.replaceAll(p,reverse[p]));
+ const words=text.split(/\s+/);
+ const out=words.map(w=>{
+   if(shortcuts[w]) return w;
+   return [...w].map(ch=>letterToCode[ch]||ch).join(".");
+ });
+ output.value=out.join("_");
+}
+function decode(){
+ const words=input.value.toUpperCase().trim().split("_");
+ const out=words.map(w=>{
+   if(shortcuts[w]) return shortcuts[w];
+   return w.split(".").map(c=>codeToLetter[c]||c).join("");
+ });
+ output.value=out.join(" ");
+}
+function copyOut(){navigator.clipboard.writeText(output.value);alert("Copied!");}
+function clearAll(){input.value="";output.value="";}
+function logout(){document.getElementById('app').style.display='none';document.getElementById('login').style.display='block';password.value="";clearAll();}
+</script>
+</body>
+</html>
